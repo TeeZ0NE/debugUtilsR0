@@ -28,7 +28,10 @@ function DebugUtils() as object
 		''''''''''
 		' init: Initialize Debug Util, set class or file and own delimeters if needed
 		'
-		' @return object Instsance of this class
+		' @param {string} fileOrClassName
+		' @param {object} setting: Configuration
+		'
+		' @return {object} Instsance of this class
 		''''''''''
 		init: function(fileOrClassName as string, settings = {} as object) as object
 			m.fileOrClassName = fileOrClassName
@@ -41,6 +44,9 @@ function DebugUtils() as object
 
 		''''''''''
 		' printDebug: Print debug information into debug console
+		'
+		' @param {string} method
+		' @param {dynamic} msg: What to print
 		''''''''''
 		printDebug: sub(method as string, msg = invalid)
 			message = ""
@@ -56,6 +62,11 @@ function DebugUtils() as object
 		' name: dysplaying object name
 		' keys: ["a", "b.c"]
 		' }
+		'
+		' @param {string} method: Where is places print
+		' @param {object} obj: Map object
+		' @param {string} name: Printable object's name
+		' @param {array} keys: Object's properties
 		''''''''''
 		printKeyValue: sub(method, obj as object, name = "objName" as string, keys = [] as object)
 			valueType = Type(obj)
@@ -94,7 +105,9 @@ function DebugUtils() as object
 		''''''''''
 		' _compoundMessage: Build printable message
 		'
-		' @return string
+		' @param {string} method: Where is places print
+		' @param {dynamic} msg: What to print
+		' @return {string}
 		''''''''''
 		_compoundMessage: function(method as string, msg) as string
 			fullMessage = (function(fileOrClassName, method, lineDelimeter)
@@ -121,6 +134,8 @@ function DebugUtils() as object
 
 		''''''''''
 		' _dashLine: print dash line with message length
+		'
+		' @param {integer} length: length of string
 		''''''''''
 		_dashLine: sub(length as integer)
 			if (length > m.maxDashLineLength) then length = m.maxDashLineLength
@@ -130,7 +145,8 @@ function DebugUtils() as object
 		''''''''''
 		' _convertToStr: simple string converter
 		'
-		' @return string
+		' @param {dynamic} value: Convertable value
+		' @return {string}
 		''''''''''
 		_convertToStr: function(value) as string
 			try
@@ -162,7 +178,8 @@ function DebugUtils() as object
 		''''''''''
 		' _convertAssocArrayToStr: simple associative array to string converter
 		'
-		' @return string
+		' @param {object}: AA 2 string
+		' @return {string}
 		''''''''''
 		_convertAssocArrayToStr: function(obj as object) as string
 			message = ""
@@ -194,7 +211,8 @@ function DebugUtils() as object
 		''''''''''
 		' _convertListToStr: roList, roArray string converter
 		'
-		' @return string
+		' @param {object} obj: A or List
+		' @return {string}
 		''''''''''
 		_convertListToStr: function(obj as object) as string
 			message = ""
@@ -212,7 +230,7 @@ function DebugUtils() as object
 		''''''''''
 		' _getDblQuotes: make quotes
 		'
-		' @return string
+		' @return {string}
 		''''''''''
 		_getDblQuotes: function() as string
 			return string(2, m.quote)
@@ -220,6 +238,8 @@ function DebugUtils() as object
 
 		''''''''''
 		' _setSettings: apply settings
+		'
+		' @param {object} settings: Class properties
 		''''''''''
 		_setSettings: sub(settings as object)
 			m.settings = settings
@@ -233,7 +253,9 @@ function DebugUtils() as object
 		''''''''''
 		' _hasType: Check and add a type of value before it, rounded typePrintOptions array values
 		'
-		' @return string
+		' @param {string} typeOf: Value's type
+		' @param {string} inputData: Value's data
+		' @return {string}
 		''''''''''
 		_hasType: function(typeOf as string, inputData as string) as string
 			if m.typePrintable
