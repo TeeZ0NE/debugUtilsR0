@@ -23,7 +23,7 @@ function DebugUtils() as object
 		lineDelimeter: "-", ' Separate symbol between messages
 		enabled: true, ' Is current instance enabled and prints debug info
 		typePrintOptions: ["<<", ">>"] ' Symbols around of a value type
-		typePrintable: false, ' Do need to print type of a variable (symple types only)
+		typePrintable: false, ' Do need to print type of a variable (simple types only)
 
 		''''''''''
 		' init: Initialize Debug Util, set class or file and own delimeters if needed
@@ -31,7 +31,7 @@ function DebugUtils() as object
 		' @param {string} fileOrClassName
 		' @param {object} setting: Configuration
 		'
-		' @return {object} Instsance of this class
+		' @return {object} Instance of this class
 		''''''''''
 		init: function(fileOrClassName as string, settings = {} as object) as object
 			m.fileOrClassName = fileOrClassName
@@ -59,7 +59,7 @@ function DebugUtils() as object
 		''''''''''
 		' getKeysValues: Prints obj keys or obj.key : value
 		' obj: object
-		' name: dysplaying object name
+		' name: displaying object name
 		' keys: ["a", "b.c"]
 		' }
 		'
@@ -80,14 +80,14 @@ function DebugUtils() as object
 				filteredObj = {}
 				for each key in keys
 					if (key.inStr(".") > -1)
-						splitedKeys = key.split(".")
-						currSplitedObject = obj[splitedKeys[0]]
-						for i = 1 to splitedKeys.count() - 1
-							if (Type(currSplitedObject) = "roAssociativeArray")
-								currSplitedObject = currSplitedObject[splitedKeys[i]]
+						splitKeys = key.split(".")
+						currentSplitObject = obj[splitKeys[0]]
+						for i = 1 to splitKeys.count() - 1
+							if (Type(currentSplitObject) = "roAssociativeArray")
+								currentSplitObject = currentSplitObject[splitKeys[i]]
 							end if
 						end for
-						filteredObj[key] = currSplitedObject
+						filteredObj[key] = currentSplitObject
 					else
 						filteredObj[key] = obj[key]
 					end if
@@ -264,7 +264,6 @@ function DebugUtils() as object
 			return inputData
 		end function,
 	}
-
 
 	m._debugUtilsSingelton = instance
 
