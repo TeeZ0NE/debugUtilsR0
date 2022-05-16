@@ -13,14 +13,14 @@
 '''''''''
 function DebugUtils() as object
 	instance = {
-		fileOrClassName: "",
+		fileOrClassName$: "",
 		quote: Chr(34),
 		noticedMsg: "Don't forget remove Debug Utility"
 		' Settings (Options) list
 		settings: {}, ' Options which can be replaced
 		maxDashLineLength: 100, ' Depends on a screen wide
 		inOneLinePrintable: true, ' If true - print as JSON string, else, row-by-row
-		lineDelimeter: "-", ' Separate symbol between messages
+		lineDelimeter$: "-", ' Separate symbol between messages
 		enabled: true, ' Is current instance enabled and prints debug info
 		typePrintOptions: ["<<", ">>"] ' Symbols around of a value type
 		typePrintable: false, ' Do need to print type of a variable (simple types only)
@@ -28,16 +28,16 @@ function DebugUtils() as object
 		''''''''''
 		' init: Initialize Debug Util, set class or file and own delimeters if needed
 		'
-		' @param {string} fileOrClassName
+		' @param {string} fileOrClassName$
 		' @param {object} setting: Configuration
 		'
 		' @return {object} Instance of this class
 		''''''''''
-		init: function(fileOrClassName as string, settings = {} as object) as object
-			m.fileOrClassName = fileOrClassName
+		init: function(fileOrClassName$ as string, settings = {} as object) as object
+			m.fileOrClassName$ = fileOrClassName$
 			m._setSettings(settings)
-			msg = Substitute("{1} {0} {1}", m.noticedMsg, string(5, m.lineDelimeter))
-			m.printDebug(m.fileOrClassName, msg)
+			msg = Substitute("{1} {0} {1}", m.noticedMsg, string(5, m.lineDelimeter$))
+			m.printDebug(m.fileOrClassName$, msg)
 
 			return m
 		end function,
@@ -110,7 +110,7 @@ function DebugUtils() as object
 		' @return {string}
 		''''''''''
 		_compoundMessage: function(method as string, msg) as string
-			fullMessage = (function(fileOrClassName, method, lineDelimeter)
+			fullMessage = (function(fileOrClassName$, method, lineDelimeter$)
 				timeStamp = function() as string
 					addZeroPrefix = function(value as integer) as string
 						if (value < 10) then return Substitute("0{0}", value.toStr())
@@ -119,10 +119,10 @@ function DebugUtils() as object
 					dateTime = CreateObject("roDateTime")
 					return Substitute("{0}:{1}:{2}.{3}", addZeroPrefix(dateTime.GetHours()), addZeroPrefix(dateTime.GetMinutes()), addZeroPrefix(dateTime.GetSeconds()), dateTime.GetMilliseconds().toStr())
 				end function
-				debugText = Substitute("{0}{1}DebugUtils", timeStamp(), lineDelimeter)
-				if (fileOrClassName = "" or fileOrClassName = method) return Substitute("{1}{2}{1} {0}()", method, lineDelimeter, debugText)
-				return Substitute("{2}{3}{2} {0}.{1}()", fileOrClassName, method, lineDelimeter, debugText)
-			end function)(m.fileOrClassName, method, m.lineDelimeter)
+				debugText = Substitute("{0}{1}DebugUtils", timeStamp(), lineDelimeter$)
+				if (fileOrClassName$ = "" or fileOrClassName$ = method) return Substitute("{1}{2}{1} {0}()", method, lineDelimeter$, debugText)
+				return Substitute("{2}{3}{2} {0}.{1}()", fileOrClassName$, method, lineDelimeter$, debugText)
+			end function)(m.fileOrClassName$, method, m.lineDelimeter$)
 			message = ""
 			if (msg <> invalid) then message = m._convertToStr(msg)
 
@@ -139,7 +139,7 @@ function DebugUtils() as object
 		''''''''''
 		_dashLine: sub(length as integer)
 			if (length > m.maxDashLineLength) then length = m.maxDashLineLength
-			print string(length, m.lineDelimeter)
+			print string(length, m.lineDelimeter$)
 		end sub,
 
 		''''''''''
