@@ -48,7 +48,7 @@ function DebugUtils() as object
 		' @param {string} method
 		' @param {dynamic} msg: What to print
 		''''''''''
-		printDebug: sub(method as string, msg = invalid)
+		printDebug: sub(method as string, msg = invalid as dynamic)
 			message = ""
 			if m.enabled then message = m._compoundMessage(method, msg)
 			messageLength = Len(message)
@@ -68,7 +68,7 @@ function DebugUtils() as object
 		' @param {string} name: Printable object's name
 		' @param {array} keys: Object's properties
 		''''''''''
-		printKeyValue: sub(method, obj as object, name = "objName" as string, keys = [] as object)
+		printKeyValue: sub(method as string, obj as object, name = "objName" as string, keys = [] as object)
 			valueType = Type(obj)
 			isObj = (valueType = "roAssociativeArray" or valueType = "roSGNode")
 			if (not isObj) then m.printDebug(method, name + " This is not an object"): return
@@ -109,8 +109,8 @@ function DebugUtils() as object
 		' @param {dynamic} msg: What to print
 		' @return {string}
 		''''''''''
-		_compoundMessage: function(method as string, msg) as string
-			fullMessage = (function(fileOrClassName$, method, lineDelimeter$)
+		_compoundMessage: function(method as string, msg as dynamic) as string
+			fullMessage = (function(fileOrClassName$ as string, method as string, lineDelimeter$ as string) as string
 				timeStamp = function() as string
 					addZeroPrefix = function(value as integer) as string
 						if (value < 10) then return Substitute("0{0}", value.toStr())
@@ -120,7 +120,7 @@ function DebugUtils() as object
 					return Substitute("{0}:{1}:{2}.{3}", addZeroPrefix(dateTime.GetHours()), addZeroPrefix(dateTime.GetMinutes()), addZeroPrefix(dateTime.GetSeconds()), dateTime.GetMilliseconds().toStr())
 				end function
 				debugText = Substitute("{0}{1}DebugUtils", timeStamp(), lineDelimeter$)
-				if (fileOrClassName$ = "" or fileOrClassName$ = method) return Substitute("{1}{2}{1} {0}()", method, lineDelimeter$, debugText)
+				if (fileOrClassName$ = "" or fileOrClassName$ = method) then return Substitute("{1}{2}{1} {0}()", method, lineDelimeter$, debugText)
 				return Substitute("{2}{3}{2} {0}.{1}()", fileOrClassName$, method, lineDelimeter$, debugText)
 			end function)(m.fileOrClassName$, method, m.lineDelimeter$)
 			message = ""
@@ -148,7 +148,7 @@ function DebugUtils() as object
 		' @param {dynamic} value: Convertable value
 		' @return {string}
 		''''''''''
-		_convertToStr: function(value) as string
+		_convertToStr: function(value as dynamic) as string
 			try
 				valueType = Type(value)
 				err = {}
@@ -186,7 +186,7 @@ function DebugUtils() as object
 			nodeKeys = obj.Keys()
 			eonL = (function(inOneLinePrintable as boolean) as string
 				comma = ", "
-				if inOneLinePrintable return comma
+				if inOneLinePrintable then return comma
 				return comma + Chr(10)
 			end function)(m.inOneLinePrintable)
 
@@ -195,7 +195,7 @@ function DebugUtils() as object
 				for each nodeKey in nodeKeys
 					convertedValue = m._convertToStr(obj[nodeKey])
 					initSpace = (function(inOneLinePrintable as boolean) as string
-						if (inOneLinePrintable) return ""
+						if (inOneLinePrintable) then return ""
 						return " "
 					end function)(m.inOneLinePrintable)
 
@@ -204,7 +204,7 @@ function DebugUtils() as object
 				end for
 			end if
 
-			if m.inOneLinePrintable return Substitute("{{0}}", message)
+			if m.inOneLinePrintable then return Substitute("{{0}}", message)
 			return Substitute("{{1}{0}{1}}", message, Chr(10))
 		end function,
 
