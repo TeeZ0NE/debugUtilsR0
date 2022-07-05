@@ -35,7 +35,7 @@ function DebugUtils() as object
 		''''''''''
 		init: function(fileOrClassName$ as string, settings = {} as object) as object
 			m.fileOrClassName$ = fileOrClassName$
-			m._setSettings(settings)
+			m.setSettings(settings)
 			msg = Substitute("{1} {0} {1}", m.noticedMsg, string(5, m.lineDelimeter$))
 			m.printDebug(m.fileOrClassName$, msg)
 
@@ -100,6 +100,19 @@ function DebugUtils() as object
 			msg = invalid
 		end sub,
 
+		''''''''''
+		' setSettings: apply settings
+		'
+		' @param {object} settings: Class properties
+		''''''''''
+		setSettings: sub(settings as object)
+			if (not settings.isEmpty())
+				for each setting in settings.Items()
+					m[setting.key] = setting.value
+				end for
+			end if
+		end sub,
+
 		' PRIVATE
 
 		''''''''''
@@ -151,7 +164,6 @@ function DebugUtils() as object
 		_convertToStr: function(value as dynamic) as string
 			try
 				valueType = Type(value)
-				err = {}
 
 				if (valueType = "Integer" or valueType = "roInt" or valueType = "roInteger"or valueType = "Float" or valueType = "roFloat" or valueType = "Double" or valueType = "roDouble" or valueType = "LongInteger" or valueType = "roLongInteger" or valueType = "Boolean" or valueType = "roBoolean") then return m._hasType(valueType, value.toStr())
 
@@ -235,20 +247,6 @@ function DebugUtils() as object
 		_getDblQuotes: function() as string
 			return string(2, m.quote)
 		end function,
-
-		''''''''''
-		' _setSettings: apply settings
-		'
-		' @param {object} settings: Class properties
-		''''''''''
-		_setSettings: sub(settings as object)
-			m.settings = settings
-			if (not m.settings.isEmpty())
-				for each setting in m.settings.Items()
-					m[setting.key] = setting.value
-				end for
-			end if
-		end sub,
 
 		''''''''''
 		' _hasType: Check and add a type of value before it, rounded typePrintOptions array values
