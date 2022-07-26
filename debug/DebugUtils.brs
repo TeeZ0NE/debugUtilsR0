@@ -53,7 +53,16 @@ function DebugUtils() as object
 			if m.enabled then message = m._compoundMessage(method, msg)
 			messageLength = Len(message)
 			m._dashLine(messageLength): print message: m._dashLine(messageLength)
-			message = invalid
+		end sub,
+
+		''''''''''
+		' pD: alias of printDebug
+		'
+		' @param {string} method
+		' @param {dynamic} message
+		''''''''''
+		pD: sub(method as string, msg = invalid as dynamic)
+			m.printDebug(method, msg)
 		end sub,
 
 		''''''''''
@@ -94,10 +103,8 @@ function DebugUtils() as object
 				end for
 				msg[name] = filteredObj
 			end if
-			filteredObj = invalid
 
 			m.printDebug(method, msg)
-			msg = invalid
 		end sub,
 
 		''''''''''
@@ -112,6 +119,23 @@ function DebugUtils() as object
 				end for
 			end if
 		end sub,
+
+		''''''''''
+		' getSettings: Debug settings
+		'
+		' @return {object}
+		''''''''''
+		getSettings: function() as object
+			return m.settings
+		end function,
+
+		''''''''''
+		' printSettings: print currents debug settings
+		'
+		''''''''''
+		printSettings: sub()
+			m.printDebug("printDebugSettings", m.getSettings())
+		end sub
 
 		' PRIVATE
 
@@ -140,7 +164,6 @@ function DebugUtils() as object
 			if (msg <> invalid) then message = m._convertToStr(msg)
 
 			if (Len(message) > 0) then fullMessage += Substitute("{1}i: {0}", message, Chr(10))
-			message = invalid
 
 			return fullMessage
 		end function,
