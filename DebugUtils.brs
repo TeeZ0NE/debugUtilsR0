@@ -113,6 +113,18 @@ function DebugUtils() as object
 			end if
 		end sub,
 
+		''''''''''
+		' stop: stop running an application
+		'
+		' @param {string}? Method where it placed
+		' @param {msg}? Some data
+		''''''''''
+		stop: sub(method = "Undefined" as string, msg = invalid as dynamic)
+			if msg = invalid then msg = "STOP"
+			m.printDebug(method, msg)
+			stop
+		end sub,
+
 		' PRIVATE
 
 		''''''''''
