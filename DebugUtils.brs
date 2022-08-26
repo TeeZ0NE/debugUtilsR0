@@ -1,3 +1,4 @@
+'#region *** Description
 ' ==bsconfig.json==
 ' files:[{
 '	"src": "../extra/debug/DebugUtils.brs",
@@ -5,6 +6,7 @@
 '	}]
 ' ==.xml==
 ' <script type="text/brightscript" uri="pkg:/source/utils/debug/DebugUtils.brs"/>
+'#endregion *** Description
 
 '''''''''
 ' DebugUtils: Helper to print debug data.
@@ -25,6 +27,7 @@ function DebugUtils() as object
 		typePrintOptions: ["<<", ">>"] ' Symbols around of a value type
 		typePrintable: false, ' Do need to print type of a variable (simple types only)
 
+		'#region *** INIT
 		''''''''''
 		' init: Initialize Debug Util, set class or file and own delimeters if needed
 		'
@@ -41,7 +44,9 @@ function DebugUtils() as object
 
 			return m
 		end function,
+		'#endregion *** INIT
 
+		'#region *** PRINT_DEBUG AND PRINT
 		''''''''''
 		' printDebug: Print debug information into debug console
 		'
@@ -52,10 +57,22 @@ function DebugUtils() as object
 			message = ""
 			if m.enabled then message = m._compoundMessage(method, msg)
 			messageLength = Len(message)
-			m._dashLine(messageLength): print message: m._dashLine(messageLength)
-			message = invalid
+			m._dashLine(messageLength): print message: m._dashLine(messageLength) 'bs:disable-line
+			message = invalid 'bs:disable-line
 		end sub,
 
+		''''''''''
+		' print: Alias printDebug
+		'
+		' @param {string} method
+		' @param {dynamic} msg: What to print
+		''''''''''
+		print: sub(method as string, msg = invalid as dynamic)
+			m.printDebug(method, msg)
+		end sub,
+		'#endregion *** PRINT_DEBUG AND PRINT
+
+		'#region *** PRINT_KEY_VALUE
 		''''''''''
 		' getKeysValues: Prints obj keys or obj.key : value
 		' obj: object
@@ -94,12 +111,14 @@ function DebugUtils() as object
 				end for
 				msg[name] = filteredObj
 			end if
-			filteredObj = invalid
+			filteredObj = invalid 'bs:disable-line
 
 			m.printDebug(method, msg)
-			msg = invalid
+			msg = invalid 'bs:disable-line
 		end sub,
+		'#endregion *** PRINT_KEY_VALUE
 
+		'#region *** SET_SETTINGS
 		''''''''''
 		' setSettings: apply settings
 		'
@@ -112,7 +131,9 @@ function DebugUtils() as object
 				end for
 			end if
 		end sub,
+		'#endregion *** SET_SETTINGS
 
+		'#region *** STOP
 		''''''''''
 		' stop: stop running an application
 		'
@@ -122,11 +143,14 @@ function DebugUtils() as object
 		stop: sub(method = "Undefined" as string, msg = invalid as dynamic)
 			if msg = invalid then msg = "STOP"
 			m.printDebug(method, msg)
-			stop
+			stop 'bs:disable-line
 		end sub,
+		'#endregion *** STOP
 
 		' PRIVATE
 
+		'#region *** PRIVATE
+		'#region *** private COMPOUND_MESSAGE
 		''''''''''
 		' _compoundMessage: Build printable message
 		'
@@ -152,11 +176,13 @@ function DebugUtils() as object
 			if (msg <> invalid) then message = m._convertToStr(msg)
 
 			if (Len(message) > 0) then fullMessage += Substitute("{1}i: {0}", message, Chr(10))
-			message = invalid
+			message = invalid 'bs:disable-line
 
 			return fullMessage
 		end function,
+		'#endregion *** private COMPOUND_MESSAGE
 
+		'#region *** private DASH_LINE
 		''''''''''
 		' _dashLine: print dash line with message length
 		'
@@ -164,9 +190,11 @@ function DebugUtils() as object
 		''''''''''
 		_dashLine: sub(length as integer)
 			if (length > m.maxDashLineLength) then length = m.maxDashLineLength
-			print string(length, m.lineDelimeter$)
+			print string(length, m.lineDelimeter$) 'bs:disable-line
 		end sub,
+		'#endregion *** private DASH_LINE
 
+		'#region *** private CONVERT_TO_STRING
 		''''''''''
 		' _convertToStr: simple string converter
 		'
@@ -197,6 +225,20 @@ function DebugUtils() as object
 				return "error: " + err.message
 			end try
 			return ""
+		end function,
+
+		''''''''''
+		' _hasType: Check and add a type of value before it, rounded typePrintOptions array values
+		'
+		' @param {string} typeOf: Value's type
+		' @param {string} inputData: Value's data
+		' @return {string}
+		''''''''''
+		_hasType: function(typeOf as string, inputData as string) as string
+			if m.typePrintable
+				return Substitute("{1}{0}{2}{3}", typeOf, m.typePrintOptions[0], m.typePrintOptions[1], inputData)
+			end if
+			return inputData
 		end function,
 
 		''''''''''
@@ -250,7 +292,9 @@ function DebugUtils() as object
 			end if
 			return Substitute("[{0}]", message)
 		end function,
+		'#endregion *** private CONVERT_TO_STRING
 
+		'#region *** private GET_QUOTES
 		''''''''''
 		' _getDblQuotes: make quotes
 		'
@@ -258,21 +302,9 @@ function DebugUtils() as object
 		''''''''''
 		_getDblQuotes: function() as string
 			return string(2, m.quote)
-		end function,
-
-		''''''''''
-		' _hasType: Check and add a type of value before it, rounded typePrintOptions array values
-		'
-		' @param {string} typeOf: Value's type
-		' @param {string} inputData: Value's data
-		' @return {string}
-		''''''''''
-		_hasType: function(typeOf as string, inputData as string) as string
-			if m.typePrintable
-				return Substitute("{1}{0}{2}{3}", typeOf, m.typePrintOptions[0], m.typePrintOptions[1], inputData)
-			end if
-			return inputData
-		end function,
+		end function
+		'#endregion *** private GET_QUOTES
+		'#endregion *** PRIVATE
 	}
 
 	m._debugUtilsSingelton = instance
