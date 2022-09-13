@@ -55,10 +55,13 @@ function DebugUtils() as object
 		''''''''''
 		printDebug: sub(method as string, msg = invalid as dynamic)
 			message = ""
+			inOneLinePrintable = m.inOneLinePrintable
+			if(m.inOneLinePrintable) then m.inOneLinePrintable = false
 			if m.enabled then message = m._compoundMessage(method, msg)
 			messageLength = Len(message)
 			m._dashLine(messageLength): print message: m._dashLine(messageLength) 'bs:disable-line
 			message = invalid 'bs:disable-line
+			m.inOneLinePrintable = inOneLinePrintable
 		end sub,
 
 		''''''''''
