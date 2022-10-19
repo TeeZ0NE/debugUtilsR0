@@ -83,7 +83,7 @@ function DebugUtils() as object
 		' keys: ["a", "b.c"]
 		' }
 		'
-		' @param {string} method: Where is places print
+		' @param {string} method: Method Name
 		' @param {object} obj: Map object
 		' @param {string} name: Printable object's name
 		' @param {array} keys: Object's properties
