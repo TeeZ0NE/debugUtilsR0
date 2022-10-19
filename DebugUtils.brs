@@ -2,7 +2,7 @@
 ' ==bsconfig.json==
 ' files:[{
 '	"src": "../extra/debug/DebugUtils.brs",
-'"dest": "source/utils/debug/DebugUtils.brs"
+'"dest": "source/utils/DebugUtils.brs"
 '	}]
 ' ==.xml==
 ' <script type="text/brightscript" uri="pkg:/source/utils/debug/DebugUtils.brs"/>
