@@ -71,7 +71,11 @@ function DebugUtils() as object
 		' @param {dynamic} msg: What to print
 		''''''''''
 		print: sub(method as string, msg = invalid as dynamic)
-			m.printDebug(method, msg)
+			message = ""
+			if m.enabled then message = m._compoundMessage(method, msg)
+			messageLength = Len(message)
+			m._dashLine(messageLength): print message: m._dashLine(messageLength) 'bs:disable-line
+			message = invalid 'bs:disable-line
 		end sub,
 		'#endregion *** PRINT_DEBUG AND PRINT
 
@@ -273,7 +277,7 @@ function DebugUtils() as object
 				end for
 			end if
 
-			if m.inOneLinePrintable then return Substitute("{{0}}", message)
+			if (m.inOneLinePrintable or len(message) = 0) then return Substitute("{{0}}", message)
 			return Substitute("{{1}{0}{1}}", message, Chr(10))
 		end function,
 
