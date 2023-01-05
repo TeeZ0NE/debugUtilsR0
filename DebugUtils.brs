@@ -15,10 +15,10 @@
 '''''''''
 function DebugUtils() as object
 	instance = {
-		fileOrClassName$: "",
-		quote: Chr(34),
-		noticedMsg: "Don't forget remove Debug Utility"
-		' Settings (Options) list
+		_fileOrClassName$: "",
+		_quote: Chr(34),
+		_noticedMsg$: "Don't forget remove Debug Utility"
+		'* Settings (Options) list
 		settings: {}, ' Options which can be replaced
 		maxDashLineLength: 100, ' Depends on a screen wide
 		inOneLinePrintable: true, ' If true - print as JSON string, else, row-by-row
@@ -37,10 +37,10 @@ function DebugUtils() as object
 		' @return {object} Instance of this class
 		''''''''''
 		init: function(fileOrClassName$ as string, settings = {} as object) as object
-			m.fileOrClassName$ = fileOrClassName$
+			m._fileOrClassName$ = fileOrClassName$
 			m.setSettings(settings)
-			msg = Substitute("{1} {0} {1}", m.noticedMsg, string(5, m.lineDelimeter$))
-			m.printDebug(m.fileOrClassName$, msg)
+			msg = Substitute("{1} {0} {1}", m._noticedMsg$, string(5, m.lineDelimeter$))
+			m.printDebug(m._fileOrClassName$, msg)
 
 			return m
 		end function,
@@ -60,6 +60,7 @@ function DebugUtils() as object
 			if m.enabled then message = m._compoundMessage(method, msg)
 			messageLength = Len(message)
 			m._dashLine(messageLength): print message: m._dashLine(messageLength) 'bs:disable-line
+			'* Call cleaner
 			message = invalid 'bs:disable-line
 			m.inOneLinePrintable = inOneLinePrintable
 		end sub,
@@ -75,6 +76,7 @@ function DebugUtils() as object
 			if m.enabled then message = m._compoundMessage(method, msg)
 			messageLength = Len(message)
 			m._dashLine(messageLength): print message: m._dashLine(messageLength) 'bs:disable-line
+			'* Call cleaner
 			message = invalid 'bs:disable-line
 		end sub,
 		'#endregion *** PRINT_DEBUG AND PRINT
@@ -118,9 +120,11 @@ function DebugUtils() as object
 				end for
 				msg[name] = filteredObj
 			end if
+			'* Call cleaner
 			filteredObj = invalid 'bs:disable-line
 
 			m.printDebug(method, msg)
+			'* Call cleaner
 			msg = invalid 'bs:disable-line
 		end sub,
 		'#endregion *** PRINT_KEY_VALUE
@@ -178,11 +182,12 @@ function DebugUtils() as object
 				debugText = Substitute("{0}{1}DebugUtils", timeStamp(), lineDelimeter$)
 				if (fileOrClassName$ = "" or fileOrClassName$ = method) then return Substitute("{1}{2}{1} {0}()", method, lineDelimeter$, debugText)
 				return Substitute("{2}{3}{2} {0}.{1}()", fileOrClassName$, method, lineDelimeter$, debugText)
-			end function)(m.fileOrClassName$, method, m.lineDelimeter$)
+			end function)(m._fileOrClassName$, method, m.lineDelimeter$)
 			message = ""
 			if (msg <> invalid) then message = m._convertToStr(msg)
 
 			if (Len(message) > 0) then fullMessage += Substitute("{1}i: {0}", message, Chr(10))
+			'* Call cleaner
 			message = invalid 'bs:disable-line
 
 			return fullMessage
@@ -214,20 +219,20 @@ function DebugUtils() as object
 
 				if (valueType = "Integer" or valueType = "roInt" or valueType = "roInteger"or valueType = "Float" or valueType = "roFloat" or valueType = "Double" or valueType = "roDouble" or valueType = "LongInteger" or valueType = "roLongInteger" or valueType = "Boolean" or valueType = "roBoolean") then return m._hasType(valueType, value.toStr())
 
-				if (valueType = "String" or valueType = "roString") then return m._hasType(valueType, Substitute("{1}{0}{1}", value, m.quote))
+				if (valueType = "String" or valueType = "roString") then return m._hasType(valueType, Substitute("{1}{0}{1}", value, m._quote))
 
 				if (valueType = "roAssociativeArray" or valueType = "roSGNode") then return m._hasType(valueType, m._convertAssocArrayToStr(value))
 
 				if (valueType = "roArray" or valueType = "roList") then return m._hasType(valueType, m._convertListToStr(value))
 
-				if (valueType = "<uninitialized>") then return Substitute("{1}{0}{1}", valueType, m.quote)
+				if (valueType = "<uninitialized>") then return Substitute("{1}{0}{1}", valueType, m._quote)
 
-				if (value = invalid) then return Substitute("{0}invalid{0}", m.quote)
+				if (value = invalid) then return Substitute("{0}invalid{0}", m._quote)
 
 				if (valueType = "roRegistry") then return m._hasType(valueType, m._convertListToStr(value.GetSectionList()))
 				if (valueType = "roRegistrySection") then return m._hasType(valueType, m._convertListToStr(value.GetKeyList()))
 
-				return Substitute("{1}{0}{1}", valueType, m.quote)
+				return Substitute("{1}{0}{1}", valueType, m._quote)
 			catch err
 				return "error: " + err.message
 			end try
@@ -272,7 +277,7 @@ function DebugUtils() as object
 						return " "
 					end function)(m.inOneLinePrintable)
 
-					message += Substitute("{3}{2}{0}{2}:{1}", nodeKey, convertedValue, m.quote, initSpace)
+					message += Substitute("{3}{2}{0}{2}:{1}", nodeKey, convertedValue, m._quote, initSpace)
 					if (nodeKey <> lastKey) then message += eonL
 				end for
 			end if
