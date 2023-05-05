@@ -20,12 +20,13 @@ function DebugUtils() as object
 		_noticedMsg$: "Don't forget remove Debug Utility"
 		'* Settings (Options) list
 		settings: {}, ' Options which can be replaced
-		maxDashLineLength: 100, ' Depends on a screen wide
+		maxDashLineLength%: 100, ' Depends on a screen wide
 		inOneLinePrintable: true, ' If true - print as JSON string, else, row-by-row
 		lineDelimeter$: "-", ' Separate symbol between messages
 		enabled: true, ' Is current instance enabled and prints debug info
 		typePrintOptions: ["<<", ">>"] ' Symbols around of a value type
 		typePrintable: false, ' Do need to print type of a variable (simple types only)
+		infoSymbol$: "i: ", ' Letter appears before each message
 
 		'#region *** INIT
 		''''''''''
@@ -186,7 +187,7 @@ function DebugUtils() as object
 			message = ""
 			if (msg <> invalid) then message = m._convertToStr(msg)
 
-			if (Len(message) > 0) then fullMessage += Substitute("{1}i: {0}", message, Chr(10))
+			if (Len(message) > 0) then fullMessage += Substitute("{1}{2}{0}", message, Chr(10), m.infoSymbol$)
 			'* Call cleaner
 			message = invalid 'bs:disable-line
 
@@ -198,11 +199,11 @@ function DebugUtils() as object
 		''''''''''
 		' _dashLine: print dash line with message length
 		'
-		' @param {integer} length: length of string
+		' @param {integer} length%: length of string
 		''''''''''
-		_dashLine: sub(length as integer)
-			if (length > m.maxDashLineLength) then length = m.maxDashLineLength
-			print string(length, m.lineDelimeter$) 'bs:disable-line
+		_dashLine: sub(length% as integer)
+			if (length% > m.maxDashLineLength%) then length% = m.maxDashLineLength%
+			print string(length%, m.lineDelimeter$) 'bs:disable-line
 		end sub,
 		'#endregion *** private DASH_LINE
 
