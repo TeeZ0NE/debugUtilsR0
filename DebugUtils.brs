@@ -101,7 +101,7 @@ function DebugUtils() as object
 			if (not isObj) then m.printDebug(method, name + " This is not an object"): return
 
 			msg = {}
-			if (keys.count() = 0)
+			if (keys.ifArray.count() = 0)
 				msg.oKeys = obj.keys()
 			else
 				filteredObj = {}
@@ -150,11 +150,10 @@ function DebugUtils() as object
 		' stop: stop running an application
 		'
 		' @param {string}? Method where it placed
-		' @param {msg}? Some data
+		' @param {string}? Some data
 		''''''''''
-		stop: sub(method = "Undefined" as string, msg = invalid as dynamic)
-			if msg = invalid then msg = "STOP"
-			m.printDebug(method, msg)
+		stop: sub(method$ = "Undefined" as string, msg$ = "STOP" as string)
+			m.printDebug(method$, msg$)
 			stop 'bs:disable-line
 		end sub,
 		'#endregion *** STOP
