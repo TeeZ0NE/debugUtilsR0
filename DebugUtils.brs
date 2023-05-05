@@ -102,7 +102,7 @@ function DebugUtils() as object
 
 			msg = {}
 			if (keys.ifArray.count() = 0)
-				msg.oKeys = obj.keys()
+				msg.oKeys = obj.ifAssociativeArray.keys?()
 			else
 				filteredObj = {}
 				for each key in keys
@@ -268,8 +268,9 @@ function DebugUtils() as object
 				return comma + Chr(10)
 			end function)(m.inOneLinePrintable)
 
-			if (nodeKeys.Count() > 0)
-				lastKey = nodeKeys[nodeKeys.Count() - 1]
+			nodeKeysCount = nodeKeys.ifArray.Count()
+			if (nodeKeysCount > 0)
+				lastKey = nodeKeys[nodeKeysCount - 1]
 				for each nodeKey in nodeKeys
 					convertedValue = m._convertToStr(obj[nodeKey])
 					initSpace = (function(inOneLinePrintable as boolean) as string
