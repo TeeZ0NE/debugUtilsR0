@@ -88,7 +88,6 @@ function DebugUtils() as object
 		' obj: object
 		' name: displaying object name
 		' keys: ["a", "b.c"]
-		' }
 		'
 		' @param {string} method: Method Name
 		' @param {object} obj: Map object
