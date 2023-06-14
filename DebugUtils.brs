@@ -92,10 +92,13 @@ function DebugUtils() as object
 		'
 		' @param {string} method: Method Name
 		' @param {object} obj: Map object
-		' @param {string} name: Printable object's name
-		' @param {array} keys: Object's properties
+		' @param {object} props: Object's properties, such as keys as Array, name as name of printable obj
 		''''''''''
-		printKeyValue: sub(method as string, obj as object, name = "objName" as string, keys = [] as object)
+		printKeyValue: sub(method as string, obj as object, props = {} as object)
+			name = "objName"
+			if props.DoesExist("name") then name = props.name
+			keys = []
+			if props.DoesExist("keys") then keys = props.keys
 			valueType = Type(obj)
 			isObj = (valueType = "roAssociativeArray" or valueType = "roSGNode")
 			if (not isObj) then m.printDebug(method, name + " This is not an object"): return
