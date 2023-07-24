@@ -360,3 +360,28 @@ function DebugUtils() as object
 
 	return m._debugUtilsSingelton
 end function
+
+
+sub onFileNameSet(event as object)
+	m.debUt = DebugUtils().init(event.getData())
+end sub
+
+sub onSettingsSet(event as object)
+	m.debUt.setSettings(event.getData())
+end sub
+
+sub printDebug(method$ as string, msg = invalid as dynamic)
+	m.debUt.printDebug(method$, msg)
+end sub
+
+sub printD(method$ as string, msg = invalid as dynamic)
+	m.debUt.print(method$, msg)
+end sub
+
+sub printKeyValue(method$ as string, obj as object, props = {} as object)
+	m.debUt.printKeyValue(method$, obj, props)
+end sub
+
+sub stopD(method$ as string, props as object)
+	m.debUt.stop(method$, props)
+end sub
