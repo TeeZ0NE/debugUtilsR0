@@ -160,6 +160,33 @@ function DebugUtils() as object
 		end sub,
 		'#endregion *** STOP
 
+
+		''''''''''
+		' infoPane: Add InfoPane node to screen
+		'
+		' @param {string} Method where it placed
+		' @param {object} props settings
+		' @see https://developer.roku.com/en-ca/docs/references/scenegraph/label-nodes/info-pane.md
+		''''''''''
+		infoPane: sub(method$ as string, props as object)
+			parent = props?.parent
+			if parent = invalid then m.printDebug(method$, "TOP isn't defined"): return
+
+			infoPaneNode = CreateObject("roSGNode", "infoPane")
+			settings = ["infoText", "width", "height", "bulletText", "translation"]
+			fields = {"infoText2": m._compoundTitle(method$), "infoText2BottomAlign": True, "infoText2Color": "0xFF0000"}
+			for each setting in settings
+				value = props.ifAssociativeArray.LookupCI(setting)
+				if (value <> invalid)
+					if (setting = "infoText") then value = m._convertToStr(value)
+					fields[setting] = value
+				end if
+			end for
+			infoPaneNode.setFields(fields)
+			parent.appendChild(infoPaneNode)
+		end sub,
+
+
 		' PRIVATE
 
 		'#region *** PRIVATE
@@ -167,12 +194,12 @@ function DebugUtils() as object
 		''''''''''
 		' _compoundMessage: Build printable message
 		'
-		' @param {string} method: Where is places print
+		' @param {string} method$: Where is places print
 		' @param {dynamic} msg: What to print
 		' @return {string}
 		''''''''''
-		_compoundMessage: function(method as string, msg as dynamic) as string
-			fullMessage = (function(fileOrClassName$ as string, method as string, lineDelimeter$ as string) as string
+		_compoundMessage: function(method$ as string, msg as dynamic) as string
+			debugText$ = (function(lineDelimeter$ as string) as string
 				timeStamp = function() as string
 					addZeroPrefix = function(value as integer) as string
 						if (value < 10) then return Substitute("0{0}", value.toStr())
@@ -181,10 +208,10 @@ function DebugUtils() as object
 					dateTime = CreateObject("roDateTime")
 					return Substitute("{0}:{1}:{2}.{3}", addZeroPrefix(dateTime.GetHours()), addZeroPrefix(dateTime.GetMinutes()), addZeroPrefix(dateTime.GetSeconds()), dateTime.GetMilliseconds().toStr())
 				end function
-				debugText = Substitute("{0}{1}DebugUtils", timeStamp(), lineDelimeter$)
-				if (fileOrClassName$ = "" or fileOrClassName$ = method) then return Substitute("{1}{2}{1} {0}()", method, lineDelimeter$, debugText)
-				return Substitute("{2}{3}{2} {0}.{1}()", fileOrClassName$, method, lineDelimeter$, debugText)
-			end function)(m._fileOrClassName$, method, m.lineDelimeter$)
+				debugText$ = Substitute("{0}{1}DebugUtils", timeStamp(), lineDelimeter$)
+				return debugText$
+			end function)(m.lineDelimeter$)
+			fullMessage = m._compoundTitle(method$, debugText$)
 			message = ""
 			if (msg <> invalid) then message = m._convertToStr(msg)
 
@@ -194,6 +221,13 @@ function DebugUtils() as object
 
 			return fullMessage
 		end function,
+
+
+		_compoundTitle: function(method$ as string, debugText$ = "" as string) as string
+			if (m._fileOrClassName$ = "" or m._fileOrClassName$ = method$) then return Substitute("{1}{2}{1} {0}()", method$, m.lineDelimeter$, debugText$)
+			return Substitute("{2}{3}{2} {0}.{1}()", m._fileOrClassName$, method$, m.lineDelimeter$, debugText$)
+		end function,
+
 		'#endregion *** private COMPOUND_MESSAGE
 
 		'#region *** private DASH_LINE
