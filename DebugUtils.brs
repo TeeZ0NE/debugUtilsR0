@@ -1,11 +1,16 @@
 '#region *** Description
 ' ==bsconfig.json==
 ' files:[{
-'	"src": "../extra/debug/DebugUtils.brs",
-'"dest": "source/utils/DebugUtils.brs"
+'"src": "../extra/DebugUtils.brs",
+'"dest": "source/utils/debug/DebugUtils.brs"
+'}, {
+'"src": "../extra/DebugUtils.xml",
+'"dest": "components/DebugUtils.xml"
 '	}]
 ' ==.xml==
 ' <script type="text/brightscript" uri="pkg:/source/utils/debug/DebugUtils.brs"/>
+' or in View
+' <DebugUtils id="debugUtils" fileOrClassName="ItemDetailsOverview2"/>
 '#endregion *** Description
 
 '''''''''
