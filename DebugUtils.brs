@@ -15,7 +15,7 @@
 ' or in View
 ' <DebugUtils id="debugUtils" fileOrClassName="ItemDetailsOverview2"/>
 '#endregion *** Description
-#const DEVELOPED = FALSE
+#const DEVELOPED = True
 
 '''''''''
 ' DebugUtils: Helper to print debug data.
@@ -37,7 +37,13 @@ function DebugUtils() as object
 		typePrintable: false, ' Do need to print type of a variable (simple types only)
 		infoSymbol$: "i: ", ' Letter appears before each message
 		#if DEVELOPED
-			options: invalid
+			options: (function() as object
+				options = CreateObject("roXMLElement")
+				file = ReadAsciiFile("pkg:/source/utils/debug/Options.xml")
+				options.Parse(file)
+
+				return options
+			end function)()
 		#end if
 
 		'#region *** INIT
@@ -52,7 +58,7 @@ function DebugUtils() as object
 		init: function(fileOrClassName$ as string, settings = {} as object) as object
 			m._fileOrClassName$ = fileOrClassName$
 			#if DEVELOPED
-				m._parseXMLOptions()
+				print "TYPE:";m.options.types.strings[0]@type
 			#end if
 			m.setSettings(settings)
 			msg = Substitute("{1} {0} {1}", m._noticedMsg$, string(5, m.lineDelimeter$))
@@ -370,23 +376,20 @@ function DebugUtils() as object
 		'#endregion *** private GET_QUOTES
 
 		#if DEVELOPED
-			'#region XML settings
-			_parseXMLOptions: sub()
-				m.options = CreateObject("roXMLElement")
-				file = ReadAsciiFile("pkg:/source/utils/debug/Options.xml")
-				m.options.Parse(file)
-			end sub
-			'#endregion XML settings
-
 			_checkValueType: function(valueType as string, expectedType as string) as boolean
-				if (m.options = invalid) then m._parseXMLOptions()
 				types = CreateObject("roXMLList")
-				if expectedType = "strings" then types = m.options.types?.strings
+				optTypes = m.options?.types
+				if (optTypes?.strings <> invalid and expectedType = "strings") then types = optTypes.strings
+				if (optTypes?.numbers <> invalid and expectedType = "numbers") then types = optTypes.numbers
+				if (optTypes?.booleans <> invalid and expectedType = "booleans") then types = optTypes.booleans
 				for each item in types
+					REM roXMLElement getAttributes()
 					if (valueType = item@type) then return True
 				end for
+
 				return False
 			end function
+
 			'#endregion *** PRIVATE
 		#end if
 	}
