@@ -37,7 +37,7 @@ function DebugUtils() as object
 		typePrintable: false, ' Do need to print type of a variable (simple types only)
 		infoSymbol$: "i: ", ' Letter appears before each message
 		#if DEVELOPED
-			options: (function() as object
+			options: (function() as object ' Get options from XML options file
 				options = CreateObject("roXMLElement")
 				file = ReadAsciiFile("pkg:/source/utils/debug/Options.xml")
 				options.Parse(file)
