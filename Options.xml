@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<options>
+	<types>
+		<strings type="String"/>
+		<strings type="roString"/>
+	</strings/>
+	<numeric>
+	</numeric>
+</types>
+<options>

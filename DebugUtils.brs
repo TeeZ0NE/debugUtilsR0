@@ -6,12 +6,16 @@
 '}, {
 '"src": "../extra/DebugUtils.xml",
 '"dest": "components/DebugUtils.xml"
+'}, {
+'"src": "../extra/Options.xml",
+'"dest": "source/utils/debug/Options.xml"
 '	}]
 ' ==.xml==
 ' <script type="text/brightscript" uri="pkg:/source/utils/debug/DebugUtils.brs"/>
 ' or in View
 ' <DebugUtils id="debugUtils" fileOrClassName="ItemDetailsOverview2"/>
 '#endregion *** Description
+#const DEVELOPED = FALSE
 
 '''''''''
 ' DebugUtils: Helper to print debug data.
@@ -32,6 +36,9 @@ function DebugUtils() as object
 		typePrintOptions: ["<<", ">>"] ' Symbols around of a value type
 		typePrintable: false, ' Do need to print type of a variable (simple types only)
 		infoSymbol$: "i: ", ' Letter appears before each message
+		#if DEVELOPED
+			options: invalid
+		#end if
 
 		'#region *** INIT
 		''''''''''
@@ -44,6 +51,9 @@ function DebugUtils() as object
 		''''''''''
 		init: function(fileOrClassName$ as string, settings = {} as object) as object
 			m._fileOrClassName$ = fileOrClassName$
+			#if DEVELOPED
+				m._parseXMLOptions()
+			#end if
 			m.setSettings(settings)
 			msg = Substitute("{1} {0} {1}", m._noticedMsg$, string(5, m.lineDelimeter$))
 			m.printDebug(m._fileOrClassName$, msg)
@@ -358,7 +368,27 @@ function DebugUtils() as object
 			return string(2, m.quote)
 		end function
 		'#endregion *** private GET_QUOTES
-		'#endregion *** PRIVATE
+
+		#if DEVELOPED
+			'#region XML settings
+			_parseXMLOptions: sub()
+				m.options = CreateObject("roXMLElement")
+				file = ReadAsciiFile("pkg:/source/utils/debug/Options.xml")
+				m.options.Parse(file)
+			end sub
+			'#endregion XML settings
+
+			_checkValueType: function(valueType as string, expectedType as string) as boolean
+				if (m.options = invalid) then m._parseXMLOptions()
+				types = CreateObject("roXMLList")
+				if expectedType = "strings" then types = m.options.types?.strings
+				for each item in types
+					if (valueType = item@type) then return True
+				end for
+				return False
+			end function
+			'#endregion *** PRIVATE
+		#end if
 	}
 
 	m._debugUtilsSingelton = instance
