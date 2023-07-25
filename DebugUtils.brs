@@ -15,7 +15,7 @@
 ' or in View
 ' <DebugUtils id="debugUtils" fileOrClassName="ItemDetailsOverview2"/>
 '#endregion *** Description
-#const DEVELOPED = True
+#const DEVELOPED = False
 
 '''''''''
 ' DebugUtils: Helper to print debug data.
