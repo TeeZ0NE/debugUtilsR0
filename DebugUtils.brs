@@ -58,7 +58,7 @@ function DebugUtils() as object
 		init: function(fileOrClassName$ as string, settings = {} as object) as object
 			m._fileOrClassName$ = fileOrClassName$
 			#if DEVELOPED
-				print "TYPE:";m.options.types.strings[0]@type
+				print "TYPE:";m.options?.types?.strings?[0]?@type
 			#end if
 			m.setSettings(settings)
 			msg = Substitute("{1} {0} {1}", m._noticedMsg$, string(5, m.lineDelimeter$))
@@ -291,7 +291,7 @@ function DebugUtils() as object
 
 				return Substitute("{1}{0}{1}", valueType, m._quote)
 			catch err
-				return "error: " + err.message
+				return Substitute("error: {0} in line number: {1}", err.message, err.line_number)
 			end try
 			return ""
 		end function,
