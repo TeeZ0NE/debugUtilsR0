@@ -423,3 +423,7 @@ end sub
 sub stopD(method$ as string, props as object)
 	m.debUt.stop(method$, props)
 end sub
+
+sub infoPane(method$ as string, props as object)
+	m.debUt.infoPane(method$, props)
+end sub

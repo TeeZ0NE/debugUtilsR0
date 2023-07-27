@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component name="DebugUtils" extends="Group">
+<component name="DebugUtils" extends="Task">
 	<script type="text/brightscript" uri="pkg:/source/utils/debug/DebugUtils.brs"/>
 	<interface>
 		<field id="fileOrClassname" type="string" onChange="onFileNameSet"/>
 		<field id="settings" type="assocArray" onChange="onSettingsSet"/>
+		<function name="infoPane"/>
 		<function name="printD"/>
 		<function name="printDebug"/>
 		<function name="printKeyValue"/>
