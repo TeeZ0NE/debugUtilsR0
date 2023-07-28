@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <options>
 	<types>
-		<strings type="String"/>
+		<booleans type="Boolean"/>
+		<booleans type="roBoolean"/>
+		<numerics type="Double"/>
+		<numerics type="Float"/>
+		<numerics type="Integer"/>
+		<numerics type="LongInteger"/>
+		<numerics type="roDouble"/>
+		<numerics type="roFloat"/>
+		<numerics type="roInt"/>
+		<numerics type="roInteger"/>
+		<numerics type="roLongInteger"/>
 		<strings type="roString"/>
-	</strings/>
-	<numeric>
-	</numeric>
-</types>
-<options>
+		<strings type="String"/>
+	</types>
+	<options>

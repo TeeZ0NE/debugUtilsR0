@@ -30,21 +30,20 @@ function DebugUtils() as object
 		'* Settings (Options) list
 		settings: {}, ' Options which can be replaced
 		maxDashLineLength%: 100, ' Depends on a screen wide
-		inOneLinePrintable: true, ' If true - print as JSON string, else, row-by-row
+		inOneLinePrintable: True, ' If True - print as JSON string, else, row-by-row
 		lineDelimeter$: "-", ' Separate symbol between messages
-		enabled: true, ' Is current instance enabled and prints debug info
+		enabled: True, ' Is current instance enabled and prints debug info
 		typePrintOptions: ["<<", ">>"] ' Symbols around of a value type
-		typePrintable: false, ' Do need to print type of a variable (simple types only)
+		typePrintable: False, ' Do need to print type of a variable (simple types only)
 		infoSymbol$: "i: ", ' Letter appears before each message
-		#if DEVELOPED
-			options: (function() as object ' Get options from XML options file
-				options = CreateObject("roXMLElement")
-				file = ReadAsciiFile("pkg:/source/utils/debug/Options.xml")
-				options.Parse(file)
+		options: (function() as object ' Get options from XML options file
+			options = CreateObject("roXMLElement")
+			file = ReadAsciiFile("pkg:/source/utils/debug/Options.xml")
+			options.Parse(file)
 
-				return options
-			end function)()
-		#end if
+			return options
+		end function)()
+
 
 		'#region *** INIT
 		''''''''''
@@ -57,9 +56,6 @@ function DebugUtils() as object
 		''''''''''
 		init: function(fileOrClassName$ as string, settings = {} as object) as object
 			m._fileOrClassName$ = fileOrClassName$
-			#if DEVELOPED
-				print "TYPE:";m.options?.types?.strings?[0]?@type
-			#end if
 			m.setSettings(settings)
 			msg = Substitute("{1} {0} {1}", m._noticedMsg$, string(5, m.lineDelimeter$))
 			m.printDebug(m._fileOrClassName$, msg)
@@ -67,6 +63,7 @@ function DebugUtils() as object
 			return m
 		end function,
 		'#endregion *** INIT
+
 
 		'#region *** PRINT_DEBUG AND PRINT
 		''''''''''
@@ -78,7 +75,7 @@ function DebugUtils() as object
 		printDebug: sub(method as string, msg = invalid as dynamic)
 			message = ""
 			inOneLinePrintable = m.inOneLinePrintable
-			if(m.inOneLinePrintable) then m.inOneLinePrintable = false
+			if(m.inOneLinePrintable) then m.inOneLinePrintable = False
 			if m.enabled then message = m._compoundMessage(method, msg)
 			messageLength = Len(message)
 			m._dashLine(messageLength): print message: m._dashLine(messageLength) 'bs:disable-line
@@ -86,6 +83,7 @@ function DebugUtils() as object
 			message = invalid 'bs:disable-line
 			m.inOneLinePrintable = inOneLinePrintable
 		end sub,
+
 
 		''''''''''
 		' print: Alias printDebug
@@ -102,6 +100,7 @@ function DebugUtils() as object
 			message = invalid 'bs:disable-line
 		end sub,
 		'#endregion *** PRINT_DEBUG AND PRINT
+
 
 		'#region *** PRINT_KEY_VALUE
 		''''''''''
@@ -153,6 +152,7 @@ function DebugUtils() as object
 		end sub,
 		'#endregion *** PRINT_KEY_VALUE
 
+
 		'#region *** SET_SETTINGS
 		''''''''''
 		' setSettings: apply settings
@@ -167,6 +167,7 @@ function DebugUtils() as object
 			end if
 		end sub,
 		'#endregion *** SET_SETTINGS
+
 
 		'#region *** STOP
 		''''''''''
@@ -208,9 +209,31 @@ function DebugUtils() as object
 		end sub,
 
 
+		''''''''''
+		' checkValueType: Check current type with expected: strings, numerics, booleans..Abs.
+		'
+		' @param {string} valueType Type(value)
+		' @param {string|roArray} expectedType strings, ["strings","numerics"]
+		' @return {boolean}
+		checkValueType: function(valueType as string, expected as dynamic) as boolean
+			expectedType = Type(expected)
+			if (expectedType = "String") then return m._checkValueType(valueType, expected)
+			if (expectedType = "roArray")
+				for each item in expected
+					matched = m._checkValueType(valueType, item)
+					if matched then return True
+				end for
+			end if
+
+			return False
+		end function
+
+
 		' PRIVATE
 
 		'#region *** PRIVATE
+
+
 		'#region *** private COMPOUND_MESSAGE
 		''''''''''
 		' _compoundMessage: Build printable message
@@ -263,6 +286,7 @@ function DebugUtils() as object
 		end sub,
 		'#endregion *** private DASH_LINE
 
+
 		'#region *** private CONVERT_TO_STRING
 		''''''''''
 		' _convertToStr: simple string converter
@@ -274,41 +298,44 @@ function DebugUtils() as object
 			try
 				valueType = Type(value)
 
-				if (valueType = "Integer" or valueType = "roInt" or valueType = "roInteger"or valueType = "Float" or valueType = "roFloat" or valueType = "Double" or valueType = "roDouble" or valueType = "LongInteger" or valueType = "roLongInteger" or valueType = "Boolean" or valueType = "roBoolean") then return m._hasType(valueType, value.toStr())
+				if (m.checkValueType(valueType, ["numerics", "booleans"])) then return m._addTypeBeforeValue(valueType, value.toStr())
 
-				if (valueType = "String" or valueType = "roString") then return m._hasType(valueType, Substitute("{1}{0}{1}", value, m._quote))
+				if m.checkValueType(valueType, "strings") then return m._addTypeBeforeValue(valueType, Substitute("{1}{0}{1}", value, m._quote))
 
-				if (valueType = "roAssociativeArray" or valueType = "roSGNode") then return m._hasType(valueType, m._convertAssocArrayToStr(value))
+				if (valueType = "roAssociativeArray" or valueType = "roSGNode") then return m._addTypeBeforeValue(valueType, m._convertAssocArrayToStr(value))
 
-				if (valueType = "roArray" or valueType = "roList") then return m._hasType(valueType, m._convertListToStr(value))
-
+				if (valueType = "roArray" or valueType = "roList") then return m._addTypeBeforeValue(valueType, m._convertListToStr(value))
 				if (valueType = "<uninitialized>") then return Substitute("{1}{0}{1}", valueType, m._quote)
 
 				if (value = invalid) then return Substitute("{0}invalid{0}", m._quote)
 
-				if (valueType = "roRegistry") then return m._hasType(valueType, m._convertListToStr(value.GetSectionList()))
-				if (valueType = "roRegistrySection") then return m._hasType(valueType, m._convertListToStr(value.GetKeyList()))
+				if (valueType = "roRegistry") then return m._addTypeBeforeValue(valueType, m._convertListToStr(value.GetSectionList()))
+				if (valueType = "roRegistrySection") then return m._addTypeBeforeValue(valueType, m._convertListToStr(value.GetKeyList()))
 
 				return Substitute("{1}{0}{1}", valueType, m._quote)
 			catch err
+
 				return Substitute("error: {0} in line number: {1}", err.message, err.line_number)
 			end try
+
 			return ""
 		end function,
 
+
 		''''''''''
-		' _hasType: Check and add a type of value before it, rounded typePrintOptions array values
+		' _addTypeBeforeValue: Check and add a type of value before it, rounded typePrintOptions array values
 		'
 		' @param {string} typeOf: Value's type
 		' @param {string} inputData: Value's data
 		' @return {string}
 		''''''''''
-		_hasType: function(typeOf as string, inputData as string) as string
+		_addTypeBeforeValue: function(typeOf as string, inputData as string) as string
 			if m.typePrintable
 				return Substitute("{1}{0}{2}{3}", typeOf, m.typePrintOptions[0], m.typePrintOptions[1], inputData)
 			end if
 			return inputData
 		end function,
+
 
 		''''''''''
 		' _convertAssocArrayToStr: simple associative array to string converter
@@ -344,6 +371,7 @@ function DebugUtils() as object
 			return Substitute("{{1}{0}{1}}", message, Chr(10))
 		end function,
 
+
 		''''''''''
 		' _convertListToStr: roList, roArray string converter
 		'
@@ -364,6 +392,7 @@ function DebugUtils() as object
 		end function,
 		'#endregion *** private CONVERT_TO_STRING
 
+
 		'#region *** private GET_QUOTES
 		''''''''''
 		' _getDblQuotes: make quotes
@@ -375,23 +404,28 @@ function DebugUtils() as object
 		end function
 		'#endregion *** private GET_QUOTES
 
-		#if DEVELOPED
-			_checkValueType: function(valueType as string, expectedType as string) as boolean
-				types = CreateObject("roXMLList")
-				optTypes = m.options?.types
-				if (optTypes?.strings <> invalid and expectedType = "strings") then types = optTypes.strings
-				if (optTypes?.numbers <> invalid and expectedType = "numbers") then types = optTypes.numbers
-				if (optTypes?.booleans <> invalid and expectedType = "booleans") then types = optTypes.booleans
-				for each item in types
-					REM roXMLElement getAttributes()
-					if (valueType = item@type) then return True
-				end for
 
-				return False
-			end function
+		''''''''''
+		' _checkValueType: Check current type with expected: strings, numerics, booleans..Abs.
+		'
+		' @param {string} valueType Type(value)
+		' @param {string} expectedType strings..
+		' @return {boolean}
+		_checkValueType: function(valueType as string, expectedType as string) as boolean
+			types = CreateObject("roXMLList")
+			optTypes = m.options?.types
+			if (optTypes?.strings <> invalid and expectedType = "strings") then types = optTypes.strings
+			if (optTypes?.numerics <> invalid and expectedType = "numerics") then types = optTypes.numerics
+			if (optTypes?.booleans <> invalid and expectedType = "booleans") then types = optTypes.booleans
+			for each item in types
+				REM roXMLElement getAttributes()
+				if (valueType = item@type) then return True
+			end for
 
-			'#endregion *** PRIVATE
-		#end if
+			return False
+		end function
+
+		'#endregion *** PRIVATE
 	}
 
 	m._debugUtilsSingelton = instance
