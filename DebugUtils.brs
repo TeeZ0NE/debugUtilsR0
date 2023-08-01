@@ -315,7 +315,7 @@ function DebugUtils() as object
 				return Substitute("{1}{0}{1}", valueType, m._quote)
 			catch err
 
-				return Substitute("error: {0} in line number: {1}", err.message, err.line_number)
+				return Substitute("error: {0}", err.message)
 			end try
 
 			return ""
