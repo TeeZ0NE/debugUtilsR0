@@ -174,10 +174,10 @@ function DebugUtils() as object
 		' stop: stop running an application
 		'
 		' @param {string}? Method where it placed
-		' @param {string}? Some data
+		' @param {string|dynamic}? Some data
 		''''''''''
-		stop: sub(method$ = "Undefined" as string, msg$ = "STOP" as string)
-			m.printDebug(method$, msg$)
+		stop: sub(method$ = "Undefined" as string, msg = "STOP" as dynamic)
+			m.printDebug(method$, msg)
 			stop 'bs:disable-line
 		end sub,
 		'#endregion *** STOP
