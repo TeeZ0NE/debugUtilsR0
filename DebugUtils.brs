@@ -375,7 +375,7 @@ function DebugUtils() as object
 		''''''''''
 		' _convertListToStr: roList, roArray string converter
 		'
-		' @param {object} obj: A or List
+		' @param {object} obj: Array or List
 		' @return {string}
 		''''''''''
 		_convertListToStr: function(obj as object) as string
