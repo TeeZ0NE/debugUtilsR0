@@ -102,27 +102,41 @@ function DebugUtils() as object
 		'#endregion *** PRINT_DEBUG AND PRINT
 
 
-		'#region *** PRINT_KEY_VALUE
+		'#region *** KEY_VALUE
 		''''''''''
-		' getKeysValues: Prints obj keys or obj.key : value
+		' printKeyValue: Prints obj keys or obj.key : value
 		' obj: object
-		' name: displaying object name
-		' keys: ["a", "b.c"]
+		' props.name: displaying object name
+		' props.keys: ["a", "b.c"]
 		'
-		' @param {string} method: Method Name
+		' @param {string} method$: Method Name
 		' @param {object} obj: Map object
 		' @param {object} props: Object's properties, such as keys as Array, name as name of printable obj
 		''''''''''
-		printKeyValue: sub(method as string, obj as object, props = {} as object)
+		printKeyValue: sub(method$ as string, obj as object, props = {} as object)
+			m.printDebug(method$, m.getKeyValue(obj, props))
+		end sub,
+
+
+		'''''''''
+		' getKeyValue: Get obj keys or obj.key : value
+		' obj: object
+		' props.name: displaying object name
+		' props.keys: ["a", "b.c"]
+		'
+		' @param {object} obj: Map object
+		' @param {object} props: Object's properties, such as keys as Array, name as name of printable obj
+		getKeyValue: function(obj as object, props = {} as object) as object
 			name = "objName"
 			if props.DoesExist("name") then name = props.name
-			keys = []
-			if props.DoesExist("keys") then keys = props.keys
+			msg = {}
 			valueType = Type(obj)
 			isObj = (valueType = "roAssociativeArray" or valueType = "roSGNode")
-			if (not isObj) then m.printDebug(method, name + " This is not an object"): return
+			if (not isObj) then msg.error = name + ": This is not an object": return msg
 
-			msg = {}
+			keys = []
+			if props.DoesExist("keys") then keys = props.keys
+
 			if (keys.ifArray.count() = 0)
 				msg.oKeys = obj.ifAssociativeArray.keys?()
 			else
@@ -146,11 +160,10 @@ function DebugUtils() as object
 			'* Call cleaner
 			filteredObj = invalid 'bs:disable-line
 
-			m.printDebug(method, msg)
-			'* Call cleaner
-			msg = invalid 'bs:disable-line
-		end sub,
-		'#endregion *** PRINT_KEY_VALUE
+			return msg
+		end function,
+
+		'#endregion *** KEY_VALUE
 
 
 		'#region *** SET_SETTINGS
@@ -195,12 +208,12 @@ function DebugUtils() as object
 			if parent = invalid then m.printDebug(method$, "TOP isn't defined"): return
 
 			infoPaneNode = CreateObject("roSGNode", "infoPane")
-			settings = ["infoText", "width", "height", "bulletText", "translation"]
+			settings = ["infoText", "width", "height", "bulletText", "translation", "textColor"]
 			fields = {"infoText2": m._compoundTitle(method$), "infoText2BottomAlign": True, "infoText2Color": "0xFF0000"}
 			for each setting in settings
 				value = props.ifAssociativeArray.LookupCI(setting)
 				if (value <> invalid)
-					if (setting = "infoText") then value = m._convertToStr(value)
+					if (setting = "infoText") then value = m.convertToStr(value)
 					fields[setting] = value
 				end if
 			end for
@@ -226,7 +239,41 @@ function DebugUtils() as object
 			end if
 
 			return False
-		end function
+		end function,
+
+
+		''''''''''
+		' convertToStr: simple string converter
+		'
+		' @param {dynamic} value: Convertable value
+		' @return {string}
+		''''''''''
+		convertToStr: function(value as dynamic) as string
+			try
+				valueType = Type(value)
+
+				if (m.checkValueType(valueType, ["numerics", "booleans"])) then return m._addTypeBeforeValue(valueType, value.toStr())
+
+				if m.checkValueType(valueType, "strings") then return m._addTypeBeforeValue(valueType, Substitute("{1}{0}{1}", value, m._quote))
+
+				if (valueType = "roAssociativeArray" or valueType = "roSGNode") then return m._addTypeBeforeValue(valueType, m._convertAssocArrayToStr(value))
+
+				if (valueType = "roArray" or valueType = "roList") then return m._addTypeBeforeValue(valueType, m._convertListToStr(value))
+				if (valueType = "<uninitialized>") then return Substitute("{1}{0}{1}", valueType, m._quote)
+
+				if (value = invalid) then return Substitute("{0}invalid{0}", m._quote)
+
+				if (valueType = "roRegistry") then return m._addTypeBeforeValue(valueType, m._convertListToStr(value.GetSectionList()))
+				if (valueType = "roRegistrySection") then return m._addTypeBeforeValue(valueType, m._convertListToStr(value.GetKeyList()))
+
+				return Substitute("{1}{0}{1}", valueType, m._quote)
+			catch err
+
+				return Substitute("error: {0}", err.message)
+			end try
+
+			return ""
+		end function,
 
 
 		' PRIVATE
@@ -257,7 +304,7 @@ function DebugUtils() as object
 			end function)(m.lineDelimeter$)
 			fullMessage = m._compoundTitle(method$, debugText$)
 			message = ""
-			if (msg <> invalid) then message = m._convertToStr(msg)
+			if (msg <> invalid) then message = m.convertToStr(msg)
 
 			if (Len(message) > 0) then fullMessage += Substitute("{1}{2}{0}", message, Chr(10), m.infoSymbol$)
 			'* Call cleaner
@@ -288,54 +335,6 @@ function DebugUtils() as object
 
 
 		'#region *** private CONVERT_TO_STRING
-		''''''''''
-		' _convertToStr: simple string converter
-		'
-		' @param {dynamic} value: Convertable value
-		' @return {string}
-		''''''''''
-		_convertToStr: function(value as dynamic) as string
-			try
-				valueType = Type(value)
-
-				if (m.checkValueType(valueType, ["numerics", "booleans"])) then return m._addTypeBeforeValue(valueType, value.toStr())
-
-				if m.checkValueType(valueType, "strings") then return m._addTypeBeforeValue(valueType, Substitute("{1}{0}{1}", value, m._quote))
-
-				if (valueType = "roAssociativeArray" or valueType = "roSGNode") then return m._addTypeBeforeValue(valueType, m._convertAssocArrayToStr(value))
-
-				if (valueType = "roArray" or valueType = "roList") then return m._addTypeBeforeValue(valueType, m._convertListToStr(value))
-				if (valueType = "<uninitialized>") then return Substitute("{1}{0}{1}", valueType, m._quote)
-
-				if (value = invalid) then return Substitute("{0}invalid{0}", m._quote)
-
-				if (valueType = "roRegistry") then return m._addTypeBeforeValue(valueType, m._convertListToStr(value.GetSectionList()))
-				if (valueType = "roRegistrySection") then return m._addTypeBeforeValue(valueType, m._convertListToStr(value.GetKeyList()))
-
-				return Substitute("{1}{0}{1}", valueType, m._quote)
-			catch err
-
-				return Substitute("error: {0}", err.message)
-			end try
-
-			return ""
-		end function,
-
-
-		''''''''''
-		' _addTypeBeforeValue: Check and add a type of value before it, rounded typePrintOptions array values
-		'
-		' @param {string} typeOf: Value's type
-		' @param {string} inputData: Value's data
-		' @return {string}
-		''''''''''
-		_addTypeBeforeValue: function(typeOf as string, inputData as string) as string
-			if m.typePrintable
-				return Substitute("{1}{0}{2}{3}", typeOf, m.typePrintOptions[0], m.typePrintOptions[1], inputData)
-			end if
-			return inputData
-		end function,
-
 
 		''''''''''
 		' _convertAssocArrayToStr: simple associative array to string converter
@@ -356,7 +355,7 @@ function DebugUtils() as object
 			if (nodeKeysCount > 0)
 				lastKey = nodeKeys[nodeKeysCount - 1]
 				for each nodeKey in nodeKeys
-					convertedValue = m._convertToStr(obj[nodeKey])
+					convertedValue = m.convertToStr(obj[nodeKey])
 					initSpace = (function(inOneLinePrintable as boolean) as string
 						if (inOneLinePrintable) then return ""
 						return " "
@@ -385,7 +384,7 @@ function DebugUtils() as object
 				lastIndex = countOff - 1
 				for i = 0 to lastIndex
 					if (i > 0 and i <= lastIndex) then message += ", "
-					message += m._convertToStr(obj[i])
+					message += m.convertToStr(obj[i])
 				end for
 			end if
 			return Substitute("[{0}]", message)
@@ -423,7 +422,22 @@ function DebugUtils() as object
 			end for
 
 			return False
-		end function
+		end function,
+
+
+		''''''''''
+		' _addTypeBeforeValue: Check and add a type of value before it, rounded typePrintOptions array values
+		'
+		' @param {string} typeOf: Value's type
+		' @param {string} inputData: Value's data
+		' @return {string}
+		''''''''''
+		_addTypeBeforeValue: function(typeOf as string, inputData as string) as string
+			if m.typePrintable
+				return Substitute("{1}{0}{2}{3}", typeOf, m.typePrintOptions[0], m.typePrintOptions[1], inputData)
+			end if
+			return inputData
+		end function,
 
 		'#endregion *** PRIVATE
 	}
@@ -433,6 +447,8 @@ function DebugUtils() as object
 	return m._debugUtilsSingelton
 end function
 
+
+' #region *** roSGNode API
 
 sub onFileNameSet(event as object)
 	m.debUt = DebugUtils().init(event.getData())
@@ -454,6 +470,10 @@ sub printKeyValue(method$ as string, obj as object, props = {} as object)
 	m.debUt.printKeyValue(method$, obj, props)
 end sub
 
+function getKeyValue(obj as object, props = {} as object) as object
+	return m.debUt.getKeyValue(obj, props)
+end function
+
 sub stopD(method$ as string, props as object)
 	m.debUt.stop(method$, props)
 end sub
@@ -461,3 +481,5 @@ end sub
 sub infoPane(method$ as string, props as object)
 	m.debUt.infoPane(method$, props)
 end sub
+
+'#endregion *** roSGNode API
