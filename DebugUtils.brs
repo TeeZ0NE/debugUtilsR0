@@ -26,23 +26,8 @@ function DebugUtils() as object
 	instance = {
 		_fileOrClassName$: "",
 		_quote: Chr(34),
-		_noticedMsg$: "Don't forget remove Debug Utility"
 		'* Settings (Options) list
 		settings: {}, ' Options which can be replaced
-		maxDashLineLength%: 100, ' Depends on a screen wide
-		inOneLinePrintable: True, ' If True - print as JSON string, else, row-by-row
-		lineDelimeter$: "-", ' Separate symbol between messages
-		enabled: True, ' Is current instance enabled and prints debug info
-		typePrintOptions: ["<<", ">>"] ' Symbols around of a value type
-		typePrintable: False, ' Do need to print type of a variable (simple types only)
-		infoSymbol$: "i: ", ' Letter appears before each message
-		options: (function() as object ' Get options from XML options file
-			options = CreateObject("roXMLElement")
-			file = ReadAsciiFile("pkg:/source/utils/debug/Options.xml")
-			options.Parse(file)
-
-			return options
-		end function)()
 
 
 		'#region *** INIT
@@ -57,11 +42,52 @@ function DebugUtils() as object
 		init: function(fileOrClassName$ as string, settings = {} as object) as object
 			m._fileOrClassName$ = fileOrClassName$
 			m.setSettings(settings)
-			msg = Substitute("{1} {0} {1}", m._noticedMsg$, string(5, m.lineDelimeter$))
+			msg = Substitute("{1} {0} {1}", m.noticedMsg$, string(5, m.lineDelimeter$))
 			m.printDebug(m._fileOrClassName$, msg)
 
 			return m
 		end function,
+
+		postInstall: sub()
+			m.options = (function() as object ' Get options from XML options file
+				options = CreateObject("roXMLElement")
+				file = ReadAsciiFile("pkg:/source/utils/debug/Options.xml")
+				options.Parse(file)
+
+				return options
+			end function)()
+
+			m.maxDashLineLength% = (function(value as string) as integer
+				return StrToI(value)
+			end function)(m.options?.maxDashLineLength?.GetText()) ' Depends on a screen wide
+
+			m.inOneLinePrintable = (function(value as string) as boolean
+				return LCase(value) = "true"
+			end function)(m.options.inOneLinePrintable.GetText()) ' If True - print as JSON string, else, row-by-row
+
+			m.lineDelimeter$ = m.options.lineDelimeter.GetText() ' Separate symbol between messages
+
+			m.enabled = (function(value as string) as boolean
+				return LCase(value) = "true"
+			end function)(m.options.enabled.GetText()) ' Is current instance enabled and prints debug info
+
+			m.typePrintOptions = (function(value as object) as object
+				if value = invalid then return ["<<", ">>"]
+				return [value.tag1, value.tag2]
+			end function)(m.options?.typePrintable?.GetAttributes()) ' Symbols around of a value type
+
+			m.typePrintable = (function(value as string) as boolean
+				return LCase(value) = "true"
+			end function)(m.options.typePrintable.GetText()) ' Do need to print type of a variable (simple types only)
+
+			m.infoSymbol$ = m.options.infoSymbol.getText()
+
+			m.printListIndex = (function(value as string) as boolean
+				return LCase(value) = "true"
+			end function)(m.options.printListIndex.GetText()) ' Print index before each list's element
+
+			m.noticedMsg$ = m.options.noticedMsg.GetText()
+		end sub
 		'#endregion *** INIT
 
 
@@ -384,9 +410,12 @@ function DebugUtils() as object
 				lastIndex = countOff - 1
 				for i = 0 to lastIndex
 					if (i > 0 and i <= lastIndex) then message += ", "
+					if not m.isOneLinePrintable then message += Chr(10)
+					if m.printListIndex then message += Substitute("[{0}]", StrI(i))
 					message += m.convertToStr(obj[i])
 				end for
 			end if
+
 			return Substitute("[{0}]", message)
 		end function,
 		'#endregion *** private CONVERT_TO_STRING
@@ -441,6 +470,7 @@ function DebugUtils() as object
 
 		'#endregion *** PRIVATE
 	}
+	instance.postInstall()
 
 	m._debugUtilsSingelton = instance
 

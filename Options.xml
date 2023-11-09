@@ -15,4 +15,12 @@
 		<strings type="roString"/>
 		<strings type="String"/>
 	</types>
-	<options>
+	<enabled>true</enabled>
+	<infoSymbol>i: </infoSymbol>
+	<inOneLinePrintable>true</inOneLinePrintable>
+	<lineDelimeter>-</lineDelimeter>
+	<maxDashLineLength>100</maxDashLineLength>
+	<noticedMsg>Don't forget remove Debug Utility</noticedMsg>
+	<printListIndex>false</printListIndex>
+	<typePrintable tag1="[" tag2="]">false</typePrintable>
+</options>
