@@ -85,6 +85,7 @@ function DebugUtils() as object
 			m.printListIndex = (function(value as string) as boolean
 				return LCase(value) = "true"
 			end function)(m.options.printListIndex.GetText()) ' Print index before each list's element
+			print "DebugUtils: printListIndex:"; m.printListIndex
 
 			m.noticedMsg$ = m.options.noticedMsg.GetText()
 		end sub
@@ -410,8 +411,8 @@ function DebugUtils() as object
 				lastIndex = countOff - 1
 				for i = 0 to lastIndex
 					if (i > 0 and i <= lastIndex) then message += ", "
-					if not m.isOneLinePrintable then message += Chr(10)
-					if m.printListIndex then message += Substitute("[{0}]", StrI(i))
+					if not m.inOneLinePrintable then message += Chr(10)
+					if m.printListIndex and not m.inOneLinePrintable then message += Substitute("[{0}]", i.toStr())
 					message += m.convertToStr(obj[i])
 				end for
 			end if
