@@ -85,7 +85,6 @@ function DebugUtils() as object
 			m.printListIndex = (function(value as string) as boolean
 				return LCase(value) = "true"
 			end function)(m.options.printListIndex.GetText()) ' Print index before each list's element
-			print "DebugUtils: printListIndex:"; m.printListIndex
 
 			m.noticedMsg$ = m.options.noticedMsg.GetText()
 		end sub
