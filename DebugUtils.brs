@@ -302,6 +302,16 @@ function DebugUtils() as object
 		end function,
 
 
+		''''''''''
+		' assert: Assertion check. If falls throw exception
+		'
+		' @param {boolean} value: Assertion condition
+		' @param {string|object}: Printable data, message
+		''''''''''
+		assert: sub(value as boolean, vargs = "" as dynamic)
+			if not value then throw {"message": m.convertToStr(vargs)}
+		end sub
+
 		' PRIVATE
 
 		'#region *** PRIVATE
