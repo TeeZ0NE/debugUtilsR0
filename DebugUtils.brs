@@ -364,7 +364,8 @@ function DebugUtils() as object
 		' @param {integer} length%: length of string
 		''''''''''
 		_dashLine: sub(length% as integer)
-			if (length% > m.maxDashLineLength%) then length% = m.maxDashLineLength%
+			str = string(length%, m.lineDelimeter$)
+			if (length% > m.maxDashLineLength% or Len(str) > m.maxDashLineLength%) then length% = m.maxDashLineLength%
 			print string(length%, m.lineDelimeter$) 'bs:disable-line
 		end sub,
 		'#endregion *** private DASH_LINE
