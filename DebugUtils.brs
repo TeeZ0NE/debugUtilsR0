@@ -20,11 +20,13 @@
 '''''''''
 ' DebugUtils: Helper to print debug data.
 '
+' @param {string} fileOrClassName$
 ' @return {object}
 '''''''''
-function DebugUtils() as object
+function DebugUtils(fileOrClassName$ = "" as string) as object
+	m._fileOrClassName$ = fileOrClassName$
 	instance = {
-		_fileOrClassName$: "",
+		_fileOrClassName$: m._fileOrClassName$,
 		_quote: Chr(34),
 		'* Settings (Options) list
 		settings: {}, ' Options which can be replaced
@@ -34,13 +36,11 @@ function DebugUtils() as object
 		''''''''''
 		' init: Initialize Debug Util, set class or file and own delimeters if needed
 		'
-		' @param {string} fileOrClassName$
 		' @param {object} setting: Configuration
 		'
 		' @return {object} Instance of this class
 		''''''''''
-		init: function(fileOrClassName$ as string, settings = {} as object) as object
-			m._fileOrClassName$ = fileOrClassName$
+		init: function(settings = {} as object) as object
 			m.setSettings(settings)
 			msg = Substitute("{1} {0} {1}", m.noticedMsg$, string(5, m.lineDelimeter$))
 			m.printDebug(m._fileOrClassName$, msg)
