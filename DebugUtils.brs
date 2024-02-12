@@ -1,20 +1,3 @@
-'#region *** Description
-' ==bsconfig.json==
-' files:[{
-'"src": "../extra/DebugUtils.brs",
-'"dest": "source/utils/debug/DebugUtils.brs"
-'}, {
-'"src": "../extra/DebugUtils.xml",
-'"dest": "components/DebugUtils.xml"
-'}, {
-'"src": "../extra/Options.xml",
-'"dest": "source/utils/debug/Options.xml"
-'	}]
-' ==.xml==
-' <script type="text/brightscript" uri="pkg:/source/utils/debug/DebugUtils.brs"/>
-' or in View
-' <DebugUtils id="debugUtils" fileOrClassName="ItemDetailsOverview2"/>
-'#endregion *** Description
 #const DEVELOPED = False
 
 '''''''''
@@ -24,6 +7,23 @@
 ' @return {object}
 '''''''''
 function DebugUtils(fileOrClassName$ = "" as string) as object
+	'#region *** Description
+	' ==bsconfig.json==
+	' files:[{
+	'"src": "../extra/DebugUtils.brs",
+	'"dest": "source/utils/debug/DebugUtils.brs"
+	'}, {
+	'"src": "../extra/DebugUtils.xml",
+	'"dest": "components/DebugUtils.xml"
+	'}, {
+	'"src": "../extra/Options.xml",
+	'"dest": "source/utils/debug/Options.xml"
+	'	}]
+	' ==.xml==
+	' <script type="text/brightscript" uri="pkg:/source/utils/debug/DebugUtils.brs"/>
+	' or in View
+	' <DebugUtils id="debugUtils" fileOrClassName="ItemDetailsOverview2"/>
+	'#endregion *** Description
 	m._fileOrClassName$ = fileOrClassName$
 	instance = {
 		_fileOrClassName$: m._fileOrClassName$,
