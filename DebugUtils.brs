@@ -99,10 +99,10 @@ function DebugUtils(fileOrClassName$ = "" as string) as object
 		' @param {dynamic} msg: What to print
 		''''''''''
 		printDebug: sub(method as string, msg = invalid as dynamic)
-			message = ""
+			if not m.enabled then return
 			inOneLinePrintable = m.inOneLinePrintable
 			if(m.inOneLinePrintable) then m.inOneLinePrintable = False
-			if m.enabled then message = m._compoundMessage(method, msg)
+			message = m._compoundMessage(method, msg)
 			messageLength = Len(message)
 			m._dashLine(messageLength): print message: m._dashLine(messageLength) 'bs:disable-line
 			'* Call cleaner
@@ -118,8 +118,8 @@ function DebugUtils(fileOrClassName$ = "" as string) as object
 		' @param {dynamic} msg: What to print
 		''''''''''
 		print: sub(method as string, msg = invalid as dynamic)
-			message = ""
-			if m.enabled then message = m._compoundMessage(method, msg)
+			if not m.enabled then return
+			message = m._compoundMessage(method, msg)
 			messageLength = Len(message)
 			m._dashLine(messageLength): print message: m._dashLine(messageLength) 'bs:disable-line
 			'* Call cleaner
@@ -297,8 +297,6 @@ function DebugUtils(fileOrClassName$ = "" as string) as object
 
 				return Substitute("error: {0}", err.message)
 			end try
-
-			return ""
 		end function,
 
 
