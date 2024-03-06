@@ -363,8 +363,7 @@ function DebugUtils(fileOrClassName$ = "" as string) as object
 		''''''''''
 		_dashLine: sub(length% as integer)
 			str = string(length%, m.lineDelimeter$)
-			if (length% > m.maxDashLineLength% or Len(str) > m.maxDashLineLength%) then length% = m.maxDashLineLength%
-			print string(length%, m.lineDelimeter$) 'bs:disable-line
+			print Left(str, m.maxDashLineLength%) 'bs:disable-line
 		end sub,
 		'#endregion *** private DASH_LINE
 
@@ -454,6 +453,7 @@ function DebugUtils(fileOrClassName$ = "" as string) as object
 			if (optTypes?.strings <> invalid and expectedType = "strings") then types = optTypes.strings
 			if (optTypes?.numerics <> invalid and expectedType = "numerics") then types = optTypes.numerics
 			if (optTypes?.booleans <> invalid and expectedType = "booleans") then types = optTypes.booleans
+			if (optTypes?.funcions <> invalid and expectedType = "functions") then types = optTypes.functions
 			for each item in types
 				REM roXMLElement getAttributes()
 				if (valueType = item@type) then return True

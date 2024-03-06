@@ -3,6 +3,8 @@
 	<types>
 		<booleans type="Boolean" />
 		<booleans type="roBoolean" />
+		<functions type="Function" />
+		<functions type="roFunction" />
 		<numerics type="Double" />
 		<numerics type="Float" />
 		<numerics type="Integer" />
